@@ -2,3 +2,4 @@
 inventory/*.local
 roles.galaxy/*
 collections/*
+!/**/.gitkeep
