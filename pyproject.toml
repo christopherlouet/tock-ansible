@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "tock-ansible"
+version = "0.1.0"
+description = "Ansible project for installing tock with docker-compose."
+authors = ["Christopher LOUËT"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+ansible-core = "^2.15.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

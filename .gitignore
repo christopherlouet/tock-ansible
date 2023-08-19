@@ -1,0 +1,4 @@
+.idea/
+inventory/*.local
+roles.galaxy/*
+collections/*
