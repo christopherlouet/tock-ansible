@@ -53,10 +53,10 @@ To start components deployment:
 [license-url]: https://img.shields.io/badge/license-MIT-green?style=for-the-badge
 
 [Ansible]: https://img.shields.io/badge/ansible-black?style=for-the-badge&logo=ansible&logoColor=white
-[Ansible-url]: https://nextjs.org/
+[Ansible-url]: https://www.ansible.com/
 
 [Poetry]: https://img.shields.io/badge/poetry-cyan?style=for-the-badge&logo=poetry
-[Poetry-url]: https://nextjs.org/
+[Poetry-url]: https://python-poetry.org/
 
 [Docker]: https://img.shields.io/badge/docker-blue?style=for-the-badge&logo=docker&logoColor=white
-[Docker-url]: https://nextjs.org/
+[Docker-url]: https://www.docker.com/
