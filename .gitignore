@@ -1,5 +1,6 @@
 .idea/
-inventory/*.local
+inventory/**/*
+!inventory/**/*.dist
 roles.galaxy/*
 collections/*
 !/**/.gitkeep

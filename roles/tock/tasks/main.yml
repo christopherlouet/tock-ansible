@@ -1,4 +1,26 @@
 ---
-- name: Print debug message
-  debug:
-    msg: Hello, world!
+
+- name: Create group
+  ansible.builtin.group:
+    name: "{{ tock_project_group }}"
+
+- name: Create user
+  ansible.builtin.user:
+    name: "{{ tock_project_owner }}"
+    groups: "{{ tock_project_group }},{{ docker_group }}"
+    append: yes
+
+- name: Create project directory
+  file:
+    path: "{{ tock_project_dir }}"
+    state: directory
+    owner: "{{ tock_project_owner }}"
+    group: "{{ tock_project_group }}"
+    mode: 0775
+
+- name: Copy Docker Compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ tock_project_dir }}/docker-compose.yml"
+    owner: "{{ tock_project_owner }}"
+    group: "{{ tock_project_group }}"

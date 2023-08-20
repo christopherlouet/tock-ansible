@@ -1,0 +1,143 @@
+version: '3'
+
+services:
+
+  {% for rs in range(1,mongo_replicaset_count + 1) -%}
+  {% set mongo_port = mongo_port_start + rs - 1 -%}
+  mongo{{ rs }}:
+    image: "{{ mongo_docker_image }}"
+    {% if rs > 1 -%}
+    depends_on:
+    {% for depend in range(2,rs + 1) -%}
+      {{ "  " }}- mongo{{ depend - 1 }}
+    {% endfor -%}
+    {% endif -%}
+    volumes:
+      - tockmongo{{ rs }}:/data/db
+    ports:
+      - "{{ mongo_port }}:{{ mongo_port }}"
+    command: --bind_ip_all --port {{ mongo_port }} --replSet "{{ mongo_replicaset_name }}"
+
+  {% endfor -%}
+  mongo-setup:
+    container_name: "mongo-setup"
+    image: "{{ mongo_docker_image }}"
+    depends_on:
+    {% for rs in range(1,mongo_replicaset_count + 1) -%}
+      {{ "  " }}- mongo{{ rs }}
+    {% endfor -%}
+    links:
+    {% for rs in range(1,mongo_replicaset_count + 1) -%}
+      {{ "  " }}- mongo{{ rs }}:mongo{{ rs }}
+    {% endfor -%}
+    volumes:
+      - ./scripts:/scripts
+    environment:
+    {% for rs in range(1,mongo_replicaset_count + 1) -%}
+      {{ "  " }}- MONGO{{ rs }}:mongo{{ rs }}
+    {% endfor -%}
+    {{ "  " }}- RS=tock
+    entrypoint: [ "/scripts/setup.sh" ]
+
+  build_worker:
+    image: "{{ tock_build_worker_docker_image }}"
+    depends_on:
+    {% for rs in range(1,mongo_replicaset_count + 1) -%}
+      {{ "  " }}- mongo{{ rs }}
+    {% endfor -%}
+    environment:
+      - tock_mongo_url={{ mongo_url }}
+      - tock_env={{ tock_env }}
+      - JAVA_ARGS={{ tock_build_worker_java_args }}
+      - tock_default_log_level={{ tock_default_log_level }}
+      - tock_service_log_level={{ tock_service_log_level }}
+      - tock_database_log_level={{ tock_database_log_level }}
+
+  duckling:
+    image: "{{ tock_duckling_docker_image }}"
+    environment:
+      - tock_env={{ tock_env }}
+      - tock_default_log_level={{ tock_default_log_level }}
+      - tock_service_log_level={{ tock_service_log_level }}
+      - tock_database_log_level={{ tock_database_log_level }}
+    expose:
+      - "{{ tock_duckling_port }}"
+
+  kotlin_compiler:
+    image: "{{ tock_kotlin_compiler_docker_image }}"
+    environment:
+      - tock_env={{ tock_env }}
+      - tock_kotlin_compiler_classpath=/maven
+      - tock_default_log_level={{ tock_default_log_level }}
+      - tock_service_log_level={{ tock_service_log_level }}
+      - tock_database_log_level={{ tock_database_log_level }}
+    expose:
+      - "{{ tock_kotlin_compiler_port }}"
+
+  nlp_api:
+    image: "{{ tock_nlp_api_docker_image }}"
+    depends_on:
+    {% for rs in range(1,mongo_replicaset_count + 1) -%}
+      {{ "  " }}- mongo{{ rs }}
+    {% endfor -%}
+      {{ "  " }}- duckling
+    environment:
+      - tock_mongo_url={{ mongo_url }}
+      - nlp_duckling_url={{ tock_duckling_url }}
+      - tock_env={{ tock_env }}
+      - tock_web_use_default_cors_handler={{ tock_nlp_api_web_use_default_cors_handler }}
+      - tock_web_use_default_cors_handler_with_credentials={{ tock_nlp_api_web_use_default_cors_handler_with_credentials }}
+      - tock_web_use_default_cors_handler_url={{ tock_nlp_api_web_use_default_cors_handler_url }}
+      - tock_default_log_level={{ tock_default_log_level }}
+      - tock_service_log_level={{ tock_service_log_level }}
+      - tock_database_log_level={{ tock_database_log_level }}
+    ports:
+      - "{{ tock_nlp_api_port }}:8080"
+
+  bot_api:
+    image: "{{ tock_bot_api_docker_image }}"
+    depends_on:
+    {% for rs in range(1,mongo_replicaset_count + 1) -%}
+      {{ "  " }}- mongo{{ rs }}
+    {% endfor -%}
+    {{ "  " }}- nlp_api
+    environment:
+      - tock_mongo_url={{ mongo_url }}
+      - tock_nlp_service_url={{ tock_nlp_api_url }}
+      - tock_env={{ tock_env }}
+      - tock_websocket_enabled={{ tock_bot_api_websocket_enabled }}
+      - tock_slack_use_current_api={{ tock_bot_api_slack_use_current_api }}
+      - tock_default_log_level={{ tock_default_log_level }}
+      - tock_service_log_level={{ tock_service_log_level }}
+      - tock_database_log_level={{ tock_database_log_level }}
+    ports:
+      - "{{ tock_bot_api_port }}:8080"
+
+  admin_web:
+    image: "{{ tock_admin_docker_image }}"
+    depends_on:
+    {% for rs in range(1,mongo_replicaset_count + 1) -%}
+      {{ "  " }}- mongo{{ rs }}
+    {% endfor -%}
+      {{ "  " }}- duckling
+      - kotlin_compiler
+    environment:
+      - tock_mongo_url={{ mongo_url }}
+      - nlp_duckling_url={{ tock_duckling_url }}
+      - tock_env={{ tock_env }}
+      - tock_bot_admin_rest_default_base_url={{ tock_bot_api_url }}
+      - tock_bot_compiler_service_url={{ tock_kotlin_compiler_url }}
+      - tock_configuration_bot_default_base_url={{ tock_bot_api_url }}
+      - botadminverticle_body_limit={{ tock_admin_botadminverticle_body_limit }}
+      - tock_slack_use_current_api={{ tock_admin_tock_slack_use_current_api }}
+      - tock_bot_dialog_index_ttl_days={{ tock_admin_web_bot_dialog_index_ttl_days }}
+      - tock_default_log_level={{ tock_default_log_level }}
+      - tock_service_log_level={{ tock_service_log_level }}
+      - tock_database_log_level={{ tock_database_log_level }}
+    ports:
+      - "{{ tock_admin_host_port }}:8080"
+
+volumes:
+{% for rs in range(1,mongo_replicaset_count + 1) %}
+  tockmongo{{ rs }}:
+{% endfor -%}
