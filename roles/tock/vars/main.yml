@@ -1,2 +1,46 @@
 ---
-# vars file for tock
+mongo_docker_version: 6.0.2
+mongo_docker_image: "mongo:{{ mongo_docker_version }}"
+mongo_replicaset_name: "tock"
+mongo_replicaset_count: 3
+mongo_port_start: 27017
+mongo_url: mongodb://mongo:27017,mongo2:27018,mongo3:27019/?replicaSet=tock
+mongo_volume_name: "tockmongo"
+
+tock_version: 23.3.3
+tock_env: prod
+
+tock_build_worker_docker_image: "{{ docker_repository_tock }}/build_worker:{{ tock_version }}"
+tock_build_worker_java_args: -Xmx1g -XX:MaxMetaspaceSize=256m
+
+tock_duckling_docker_image: "{{ docker_repository_tock }}/duckling:{{ tock_version }}"
+tock_duckling_port: 8080
+tock_duckling_url: http://duckling:{{ tock_duckling_port }}
+
+tock_kotlin_compiler_docker_image: "{{ docker_repository_tock }}/kotlin_compiler:{{ tock_version }}"
+tock_kotlin_compiler_classpath: /maven
+tock_kotlin_compiler_port: 8080
+tock_kotlin_compiler_url: http://kotlin_compiler:8080
+
+tock_nlp_api_docker_image: "{{ docker_repository_tock }}/nlp_api:{{ tock_version }}"
+tock_nlp_api_web_use_default_cors_handler: "true"
+tock_nlp_api_web_use_default_cors_handler_with_credentials: "false"
+tock_nlp_api_web_use_default_cors_handler_url: "*"
+tock_nlp_api_port: 8888
+tock_nlp_api_url: http://nlp_api:8080
+
+tock_bot_api_docker_image: "{{ docker_repository_tock }}/bot_api:{{ tock_version }}"
+tock_bot_api_websocket_enabled: "true"
+tock_bot_api_slack_use_current_api: "true"
+tock_bot_api_port: 8080
+tock_bot_api_url: http://bot_api:8080
+
+tock_admin_docker_image: "{{ docker_repository_tock }}/bot-admin:{{ tock_version }}"
+tock_admin_botadminverticle_body_limit: -1
+tock_admin_tock_slack_use_current_api: "true"
+tock_admin_web_bot_dialog_index_ttl_days: 20
+tock_admin_host_port: 80
+
+tock_default_log_level: warn
+tock_service_log_level: info
+tock_database_log_level: warn

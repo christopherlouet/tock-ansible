@@ -1,0 +1,4 @@
+---
+
+tock_bot_api_docker_image: "djowalker/tock-bot-api:{{ tock_version }}-OXXEO"
+tock_admin_docker_image: "djowalker/tock-bot-admin:{{ tock_version }}-OXXEO"

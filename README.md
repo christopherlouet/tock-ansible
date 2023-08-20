@@ -27,18 +27,28 @@ https://github.com/theopenconversationkit/tock-docker
 
 ### Prerequisites
 
-A linux machine with docker installed: https://docs.docker.com/engine/install/
+A linux machine with:
+
+* Docker: https://docs.docker.com/engine/install/
+* Poetry for a local installation of the playbook: ```curl -sSL https://install.python-poetry.org | python3 -```
 
 ### Installation
 
-In the inventory folder, copy the prod.local.dist file to prod.local. Then adapt the host configuration.
+In the inventory folder, copy the hosts.dist file to hosts file. Then adapt the host configuration.
 
 ### Usage
 
-To start components deployment:
+To start components deployment on a remote machine:
 
 ```bash
 ./run.sh
+```
+
+Or on the local machine:
+
+```bash
+poetry shell
+ansible-playbook main.yml
 ```
 
 [//]: # (## License)
