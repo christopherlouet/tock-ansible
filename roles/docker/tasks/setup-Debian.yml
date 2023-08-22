@@ -1,7 +1,7 @@
 ---
 
 - name: Install packages using apt
-  apt:
+  ansible.builtin.apt:
     name:
       - apt-transport-https
       - ca-certificates
@@ -9,26 +9,26 @@
       - gnupg2
       - software-properties-common
     state: present
-    update_cache: no
+    update_cache: false
 
 - name: Add Docker GPG apt Key
-  apt_key:
+  ansible.builtin.apt_key:
     url: "{{ docker_apt_gpg_key }}"
     state: present
 
 - name: Verify that we have the key with the fingerprint
-  apt_key:
-    id: 0EBFCD88
+  ansible.builtin.apt_key:
+    id: "{{ docker_debian_apt_key }}"
     state: present
 
 - name: Add Docker Repository
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "{{ docker_apt_repository }}"
     state: present
     update_cache: true
 
 - name: Update apt and install docker-ce
-  apt:
+  ansible.builtin.apt:
     name: docker-ce
     state: present
     update_cache: false
@@ -39,35 +39,36 @@
     state: present
 
 - name: Add remote user to docker group
-  user:
+  ansible.builtin.user:
     name: "{{ ansible_user }}"
     groups: "{{ docker_group }}"
-    append: yes
+    append: true
 
 - name: Run and enable docker
-  service:
+  ansible.builtin.service:
     name: docker
     state: started
     enabled: true
 
 - name: Check current docker-compose version
-  command: docker-compose --version
+  ansible.builtin.command: docker-compose --version
   register: check_docker_compose_version
   changed_when: false
   failed_when: false
   check_mode: false
 
-- set_fact:
+- name: Get current docker-compose version
+  ansible.builtin.set_fact:
     docker_compose_current_version: "{{ check_docker_compose_version.stdout | regex_search('(\\d+(\\.\\d+)+)') }}"
   when:
     - check_docker_compose_version.rc == 0
 
 - name: Install or upgrade docker-compose
-  get_url:
-    url : "https://github.com/docker/compose/releases/download/v{{ docker_compose_version }}/docker-compose-Linux-x86_64"
+  ansible.builtin.get_url:
+    url: "https://github.com/docker/compose/releases/download/v{{ docker_compose_version }}/docker-compose-Linux-x86_64"
     dest: /usr/local/bin/docker-compose
     mode: '0755'
-    force: yes
+    force: true
   when: >
     docker_compose_current_version is not defined
     or docker_compose_current_version is version(docker_compose_version, '<')
