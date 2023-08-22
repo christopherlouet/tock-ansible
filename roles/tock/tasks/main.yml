@@ -8,15 +8,22 @@
   ansible.builtin.user:
     name: "{{ tock_project_owner }}"
     groups: "{{ tock_project_group }},{{ docker_group }}"
-    append: yes
+    append: true
 
-- name: Create project directory
-  file:
-    path: "{{ tock_project_dir }}"
+- name: Create project directories
+  ansible.builtin.file:
+    path: "{{ item }}"
     state: directory
     owner: "{{ tock_project_owner }}"
     group: "{{ tock_project_group }}"
-    mode: 0775
+    mode: "0775"
+  loop:
+    - "{{ tock_project_dir }}"
+    - "{{ tock_project_dir }}/scripts"
+
+- name: Generate Mongo url
+  ansible.builtin.set_fact:
+    mongo_url: "{{ lookup('template', './mongo_url.j2') }}"
 
 - name: Copy Docker Compose file
   ansible.builtin.template:
@@ -24,3 +31,31 @@
     dest: "{{ tock_project_dir }}/docker-compose.yml"
     owner: "{{ tock_project_owner }}"
     group: "{{ tock_project_group }}"
+    mode: "0644"
+
+- name: Copy mongo setup file
+  ansible.builtin.copy:
+    src: setup-mongo.sh
+    dest: "{{ tock_project_dir }}/scripts/setup-mongo.sh"
+    owner: "{{ tock_project_owner }}"
+    group: "{{ tock_project_group }}"
+    mode: "0755"
+
+- name: Start tock services
+  block:
+    - name: Tear down existing services
+      community.docker.docker_compose:
+        project_name: "{{ docker_project_name }}"
+        project_src: "{{ tock_project_dir }}"
+      when: docker_project_tear_down
+    - name: Create and start services
+      community.docker.docker_compose:
+        project_name: "{{ docker_project_name }}"
+        project_src: "{{ tock_project_dir }}"
+        remove_orphans: true
+      register: output
+    - name: Show network IP address
+      ansible.builtin.debug:
+        msg: >-
+          Network IP address :
+          {{ output | community.general.json_query('services.*.*.networks.*.IPAddress | [0] | [0] | [0]') }}

@@ -3,4 +3,3 @@ ansible_user = tock
 
 [tock]
 # tock.home.lan
-# localhost ansible_connection=local

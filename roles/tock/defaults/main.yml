@@ -1,6 +1,8 @@
 ---
+docker_group: docker
+docker_project_name: "tock"
+docker_project_tear_down: false
 docker_repository_tock: "tock"
 tock_project_dir: "/opt/tock"
-tock_project_owner: "tock"
 tock_project_group: "tock"
-docker_group: docker
+tock_project_owner: "tock"

@@ -37,7 +37,7 @@ services:
       {{ "  " }}- MONGO{{ rs }}:mongo{{ rs }}
     {% endfor -%}
     {{ "  " }}- RS=tock
-    entrypoint: [ "/scripts/setup.sh" ]
+    entrypoint: [ "/scripts/setup-mongo.sh" ]
 
   build_worker:
     image: "{{ tock_build_worker_docker_image }}"
@@ -61,7 +61,7 @@ services:
       - tock_service_log_level={{ tock_service_log_level }}
       - tock_database_log_level={{ tock_database_log_level }}
     expose:
-      - "{{ tock_duckling_port }}"
+      - "{{ tock_duckling_expose_port }}"
 
   kotlin_compiler:
     image: "{{ tock_kotlin_compiler_docker_image }}"
@@ -72,7 +72,7 @@ services:
       - tock_service_log_level={{ tock_service_log_level }}
       - tock_database_log_level={{ tock_database_log_level }}
     expose:
-      - "{{ tock_kotlin_compiler_port }}"
+      - "{{ tock_kotlin_compiler_expose_port }}"
 
   nlp_api:
     image: "{{ tock_nlp_api_docker_image }}"

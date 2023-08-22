@@ -6,5 +6,5 @@
     ansible.builtin.setup:
       gather_subset: min
   roles:
-#    - docker
+    - docker
     - tock

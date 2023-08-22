@@ -1,7 +1,14 @@
 ---
 
-- name: Include OS-specific variables.
-  include_vars: "{{ ansible_os_family }}.yml"
+- name: Include OS-specific variables
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
 
-- include_tasks: setup-Debian.yml
+- name: Include setup-Debian task
+  ansible.builtin.include_tasks: setup-Debian.yml
   when: ansible_os_family == 'Debian'
+
+- name: Include python libraries
+  ansible.builtin.pip:
+    name:
+      - pyyaml==5.3.1
+      - docker-compose==1.29.2
