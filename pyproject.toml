@@ -7,10 +7,11 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.9"
 ansible-core = "^2.15.3"
 ansible-lint = { version = "^6.18.0", markers = "platform_system != 'Windows'" }
 jmespath = "^1.0.1"
+ruamel-yaml-clib ="^0.2.7"
 
 [build-system]
 requires = ["poetry-core"]

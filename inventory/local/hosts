@@ -1,0 +1,4 @@
+[tock]
+# tock.home.lan
+
+localhost ansible_connection=local ansible_user=$USER

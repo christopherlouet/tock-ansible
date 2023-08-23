@@ -45,6 +45,7 @@ To start components deployment on a remote machine:
 ```
 
 Or on the local machine:
+(be sure to have sudo without password asked, for instance launch a `sudo ls`)
 
 ```bash
 poetry shell
