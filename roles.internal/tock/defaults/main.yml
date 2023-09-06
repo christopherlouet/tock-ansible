@@ -1,0 +1,32 @@
+---
+docker_project_name: tock
+docker_project_tear_down: false
+
+mongo_docker_image: mongo:6.0.2
+mongo_replicaset_count: 3
+mongo_port_start: 27017
+
+tock_log_level_default: warn
+tock_log_level_service: info
+tock_log_level_database: warn
+tock_project_dir: "/opt/tock"
+tock_project_group: "tock"
+tock_project_owner: "tock"
+tock_version: 23.3.3
+
+tock_admin_docker_image: "tock/bot_admin:{{ tock_version }}"
+tock_admin_host_port: 8090
+
+tock_bot_api_docker_image: "tock/bot_api:{{ tock_version }}"
+tock_bot_api_host_port: 8080
+
+tock_build_worker_docker_image: "tock/build_worker:{{ tock_version }}"
+tock_build_worker_java_xmx: 1g
+tock_build_worker_java_mms: 256m
+
+tock_duckling_docker_image: "tock/duckling:{{ tock_version }}"
+
+tock_kotlin_compiler_docker_image: "tock/kotlin_compiler:{{ tock_version }}"
+
+tock_nlp_api_docker_image: "tock/nlp_api:{{ tock_version }}"
+tock_nlp_api_host_port: 8888

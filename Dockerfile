@@ -12,12 +12,12 @@ ENV POETRY_NO_INTERACTION=1 \
   POETRY_VERSION=1.5.1
 
 RUN pip install "poetry==$POETRY_VERSION"
-
+RUN apk add --update --no-cache gcc libc-dev
 WORKDIR /app
-
 COPY pyproject.toml poetry.lock ./
-
 RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --no-root --no-ansi
+
+#----------------------------------------------------------------------------------------
 
 FROM python:3.10-alpine3.18 as runtime
 LABEL maintainer="Christopher LOUËT"
@@ -25,15 +25,15 @@ LABEL maintainer="Christopher LOUËT"
 ENV VIRTUAL_ENV=/app/.venv \
     PATH="/app/.venv/bin:$PATH"
 
-RUN apk add --update --no-cache openssh
-
+RUN apk add --update --no-cache docker git openssh \
+    && rm -rf /var/cache/apk/*
 RUN addgroup -g 1000 app \
     && adduser -G app -u 1000 app -D
 
 USER app
-
 WORKDIR /app
-
-COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
+COPY --chown=app:app --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
+COPY --chown=app:app . /app/
+RUN /app/install-requirements.sh
 
 CMD ["/bin/sh"]

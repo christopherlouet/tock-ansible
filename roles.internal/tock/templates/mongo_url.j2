@@ -1,7 +1,7 @@
 mongodb://
 {%- for rs in range(1,mongo_replicaset_count + 1) -%}
 {% set mongo_port = mongo_port_start + rs - 1 -%}
-    mongo:{{ mongo_port }}
+    mongo{{ rs }}:{{ mongo_port }}
     {%- if rs < mongo_replicaset_count %},{% endif -%}
 {%- endfor -%}
-?replicaSet=tock
+/?replicaSet=tock

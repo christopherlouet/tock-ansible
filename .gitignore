@@ -1,6 +1,6 @@
 .idea/
-inventory/**/*
-!inventory/**/*.dist
-roles.galaxy/*
+inventory/*
+!inventory/*.dist
+roles/*
 collections/*
 !/**/.gitkeep

@@ -1,5 +1,8 @@
 ---
-
+roles:
+  - src: https://github.com/christopherlouet/ansible-role-docker.git
+    version: main
+    name: clouet.docker
 collections:
   - name: ansible.posix
     version: 1.5.4
