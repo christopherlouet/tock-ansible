@@ -1,0 +1,7 @@
+---
+- name: Prepare
+  hosts: all
+  tasks:
+    - name:  Include docker installation role
+      ansible.builtin.include_role:
+        name: clouet.docker

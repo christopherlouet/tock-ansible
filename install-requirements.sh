@@ -1,3 +1,4 @@
 #!/usr/bin/env sh
 
-ansible-galaxy collection install --requirements-file requirements.yml
+ansible-galaxy install -r requirements.yml
+ansible-galaxy collection install -r requirements.yml

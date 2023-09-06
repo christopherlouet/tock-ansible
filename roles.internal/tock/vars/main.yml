@@ -1,0 +1,29 @@
+---
+docker_group: docker
+
+mongo_replicaset_name: tock
+mongo_volume_name: tockmongo
+
+tock_env: "{{ tock_environment | default('prod') }}"
+
+tock_admin_botadminverticle_body_limit: -1
+tock_admin_tock_slack_use_current_api: "true"
+tock_admin_web_bot_dialog_index_ttl_days: 20
+
+tock_bot_api_slack_use_current_api: "true"
+tock_bot_api_url: http://bot_api:8080
+tock_bot_api_websocket_enabled: "true"
+
+tock_build_worker_java_args: "-Xmx{{ tock_build_worker_java_xmx }} -XX:MaxMetaspaceSize={{ tock_build_worker_java_mms }}"
+
+tock_duckling_expose_port: 8080
+tock_duckling_url: "http://duckling:{{ tock_duckling_expose_port }}"
+
+tock_kotlin_compiler_classpath: /maven
+tock_kotlin_compiler_expose_port: 8080
+tock_kotlin_compiler_url: "http://kotlin_compiler:{{ tock_kotlin_compiler_expose_port }}"
+
+tock_nlp_api_url: http://nlp_api:8080
+tock_nlp_api_web_use_default_cors_handler: "true"
+tock_nlp_api_web_use_default_cors_handler_with_credentials: "false"
+tock_nlp_api_web_use_default_cors_handler_url: "*"
